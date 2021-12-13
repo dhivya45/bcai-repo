@@ -1,0 +1,47 @@
+apiVersion: tekton.dev/v1alpha1
+kind: Task
+metadata:
+  name: azure-deploy-app
+  namespace: azure-functionapp
+spec:
+  inputs:
+    resources:
+      - name: functionapp-git
+        type: git
+    params:
+      - name: function_name
+        type: string
+  steps:
+    - name: install
+      image: node:10
+      workingDir: /workspace/functionapp-git/app
+      command:
+      - npm
+      args:
+      - install
+      - --only=prod
+    - name: deploy
+      image: jmcshane/azure-func-cli:0.2
+      workingDir: /workspace/functionapp-git/app
+      command:
+      - sh
+      args:
+      - /deploy.sh
+      env:
+      - name: FUNCTION_NAME
+        value: "$(inputs.params.function_name)"
+      - name: USERNAME
+        valueFrom:
+          secretKeyRef:
+            name: azure-credentials
+            key: username
+      - name: PASSWORD
+        valueFrom:
+          secretKeyRef:
+            name: azure-credentials
+            key: password
+      - name: TENANT
+        valueFrom:
+          secretKeyRef:
+            name: azure-credentials
+            key: tenant
