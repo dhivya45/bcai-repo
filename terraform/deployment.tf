@@ -11,3 +11,5 @@ resource "azurerm_resource_group" "example" {
   location = "West Europe"
 }
 
+variable "resource_group_name" {}
+
