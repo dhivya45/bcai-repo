@@ -7,9 +7,7 @@ provider "azurerm" {
  features {}
 }
 resource "azurerm_resource_group" "example" {
-  name     = var.resource_group_name
+  name     = "tkn-aks-rsg"
   location = "West Europe"
 }
-
-variable "resource_group_name" {}
 
